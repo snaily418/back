@@ -1,28 +1,23 @@
-from typing import Optional
-
 from sqlalchemy.orm import sessionmaker
 
 import db as bd
 from models import Task
 
 
-def create_task(db: sessionmaker, user_id: int, title: str, description: Optional[str] = None,
-                priority: bool = False, category_id: Optional[int] = 0,
-                checked: bool = False, tags: Optional[str] = None, time: Optional[str] = None,
-                remind: Optional[int] = None):
+def create_task(db: sessionmaker, user_id: int, task: Task):
     ses = db()
     new_task = bd.Task(
-        category_id=category_id,
+        category_id=task.category_id,
         user_id=user_id,
-        title=title,
-        description=description,
-        markdown=None,
-        priority=priority,
-        checked=checked,
-        tags=tags,
-        time=time,
+        title=task.title,
+        description=task.description,
+        priority=task.priority,
+        checked=task.checked,
+        tags=task.tags,
+        time=task.time,
+        remind=task.remind,
         address=None,
-        remind=remind
+        markdown=None
     )
     ses.add(new_task)
     ses.commit()
