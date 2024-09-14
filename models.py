@@ -22,6 +22,16 @@ class UserCreateOrUpdate(BaseModel):
     password: str | None
 
 
+class Login(BaseModel):
+    username: str
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
 class Task(BaseModel):
     title: str
     description: str | None

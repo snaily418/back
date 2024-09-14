@@ -1,35 +1,40 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from db import session, User
+from auth import get_current_user
+from db import User, get_db
 
-from models import Task, TaskExt, User, UserCreateOrUpdate
+from models import Task, TaskExt, User as UserO, UserCreateOrUpdate
 
 api = APIRouter()
 
 
-def get_db():
-    db = session()
-    try:
-        yield db
-    finally:
-        db.close()
+@api.post('/db')
+async def _db(db: Annotated[Session, Depends(get_db)]):
+    from auth import get_password_hash
+    db.add(User(username='test', email="test@test", password=get_password_hash('test')))
+    db.commit()
 
 
-def get_current_user() -> User:
-    pass
+@api.get('/me')
+async def me(
+    db: Annotated[Session, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)]
+):
+    return current_user.username
 
 
 @api.patch('/me')
 async def update_user(
     data: UserCreateOrUpdate,
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+    db: Annotated[Session, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)]
 ):
     pass
 
 
 @api.get('/categories')
 async def get_categories(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+    db: Annotated[Session, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)]
 ):
     return []
 

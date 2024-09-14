@@ -13,6 +13,14 @@ session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
+def get_db():
+    db = session()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -20,20 +28,20 @@ class User(Base):
     username: Mapped[str]
     email: Mapped[str]
     password: Mapped[str]
-    avatar: Mapped[str]
+    avatar: Mapped[str | None]
 
-    money: Mapped[int]
+    money: Mapped[int] = mapped_column(default=0)
 
-    hot_days: Mapped[int]
-    first_hot_day: Mapped[datetime]
-    freeze_count: Mapped[int]
+    hot_days: Mapped[int] = mapped_column(default=0)
+    first_hot_day: Mapped[datetime] = mapped_column(default=datetime.now)
+    freeze_count: Mapped[int] = mapped_column(default=0)
 
-    preference_accent: Mapped[int]
-    preference_background: Mapped[str]
+    preference_accent: Mapped[int] = mapped_column(default=0)
+    preference_background: Mapped[str | None]
 
-    categories: Mapped[List["Category"]] = relationship(
-        back_populates="user", cascade="all"
-    )
+    # categories: Mapped[List["Category"]] = relationship(
+    # back_populates="user", cascade="all"
+    # )
 
 
 class Category:
