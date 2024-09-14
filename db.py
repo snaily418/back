@@ -19,7 +19,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str]
     email: Mapped[str]
-    hash: Mapped[str]
+    password: Mapped[str]
     avatar: Mapped[str]
 
     money: Mapped[int]
