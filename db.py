@@ -1,7 +1,7 @@
 from typing import List
 from datetime import datetime, timedelta
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy.orm import sessionmaker, mapped_column, relationship, Mapped
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -39,37 +39,37 @@ class User(Base):
     preference_accent: Mapped[int] = mapped_column(default=0)
     preference_background: Mapped[str | None]
 
-    # categories: Mapped[List["Category"]] = relationship(
-    # back_populates="user", cascade="all"
-    # )
+    categories: Mapped[List["Category"]] = relationship(
+        back_populates="user", cascade="all"
+    )
 
 
 class Category:
     __tablename__ = 'categories'
 
-    id: Mapped[int]
-    user_id: Mapped[int]
+    id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str]
+    permanent: bool = mapped_column(default=False)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped[User] = relationship(back_populates="categories")
+
+    tasks: Mapped[List["Task"]] = relationship()
 
 
 class Task:
     __tablename__ = 'tasks'
 
-    id: Mapped[int]
-    category_id: Mapped[int]
-    user_id: Mapped[int]
+    id: Mapped[int] = mapped_column(primary_key=True)
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
 
-    checked: Mapped[bool]
+    checked: Mapped[bool] = mapped_column(default=False)
     title: Mapped[str]
     description: Mapped[str | None]
     markdown: Mapped[str | None]
-    priority: Mapped[bool]
+    priority: Mapped[bool] = mapped_column(default=False)
 
     tags: Mapped[str | None]
     time: Mapped[datetime | None]
     address: Mapped[str | None]
     remind: Mapped[timedelta | None]
-
-    @property
-    def tag_list(self):
-        return self.tags.split(",")
