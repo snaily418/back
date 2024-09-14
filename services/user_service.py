@@ -7,6 +7,10 @@ def get_user(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
 
 
+def get_user_by_name(db: Session, username: str):
+    return db.query(User).filter(User.username == username).first()
+
+
 def create_user(db: Session, username: str, email: str, password: str):
     pass
 
