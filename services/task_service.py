@@ -1,11 +1,10 @@
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
 
 import db as bd
 from models import Task
 
 
-def create_task(db: sessionmaker, user_id: int, task: Task):
-    ses = db()
+def create_task(db: Session, user_id: int, task: Task):
     new_task = bd.Task(
         category_id=task.category_id,
         user_id=user_id,
@@ -19,26 +18,23 @@ def create_task(db: sessionmaker, user_id: int, task: Task):
         address=None,
         markdown=None
     )
-    ses.add(new_task)
-    ses.commit()
+    db.add(new_task)
+    db.commit()
     return new_task
 
 
-def get_tasks(db: sessionmaker, user_id: int, category_id: int):
-    ses = db()
-    tasks: list = ses.query(Task).filter(Task.user_id == user_id, Task.category_id == category_id).all()
+def get_tasks(db: Session, user_id: int, category_id: int):
+    tasks: list = db.query(Task).filter(Task.user_id == user_id, Task.category_id == category_id).all()
     return tasks
 
 
-def get_task_ext(db: sessionmaker, task_id: int):
-    ses = db()
-    task: Task | None = ses.query(Task).filter(Task.task_id == task_id).one_or_none()
+def get_task_ext(db: Session, task_id: int):
+    task: Task | None = db.query(Task).filter(Task.task_id == task_id).one_or_none()
     return task
 
 
-def update_task(db: sessionmaker, task: Task):
-    ses = db()
-    ses.query(Task).filter(Task.task_id == task.task_id).update({
+def update_task(db: Session, task: Task):
+    db.query(Task).filter(Task.task_id == task.task_id).update({
         Task.title: task.title,
         Task.description: task.description,
         Task.priority: task.priority,
@@ -47,4 +43,4 @@ def update_task(db: sessionmaker, task: Task):
         Task.remind: task.remind,
         Task.checked: task.checked
     })
-    ses.commit()
+    db.commit()
