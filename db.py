@@ -36,7 +36,7 @@ class User(Base):
     )
 
 
-class Category:
+class Category(Base):
     __tablename__ = 'categories'
 
     id: Mapped[int]
@@ -44,7 +44,7 @@ class Category:
     title: Mapped[str]
 
 
-class Task:
+class Task(Base):
     __tablename__ = 'tasks'
 
     id: Mapped[int]
@@ -64,4 +64,6 @@ class Task:
 
     @property
     def tag_list(self):
-        return self.tags.split(",")
+        if self.tags:
+            return self.tags.split(",")
+        return []
