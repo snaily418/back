@@ -71,7 +71,7 @@ async def get_all_tasks(
 
 
 @api.post('/categories/{id}/tasks/{task_id}')
-async def check_task(
+async def checks_task(
         id: int, task_id: int, task: schemas.TaskCreate,
         db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ) -> schemas.Task:
@@ -96,8 +96,8 @@ async def shop(db: Annotated[Session, Depends(get_db)], current_user: Annotated[
 
 
 @api.post('/shop/freeze')
-async def freeze(count: int, db: Annotated[Session, Depends(get_db)],
-                 current_user: Annotated[models.User, Depends(get_current_user)]) -> schemas.User.freeze_count:
+async def freeze(db: Annotated[Session, Depends(get_db)],
+                 current_user: Annotated[models.User, Depends(get_current_user)], count: int = 1):
     if current_user.money < 15 * count:
         return HTTPException(status_code=400, detail="Не хватает монет")
     freeze_count_update(db, current_user, count)
