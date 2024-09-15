@@ -11,5 +11,3 @@ def get_password_hash(password):
     hashed_password = bcrypt.hashpw(password=pwd_bytes, salt=salt)
     return hashed_password
 
-a = get_password_hash('123')
-print(verify_password('13', a))
