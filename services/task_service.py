@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 
 import schemas
-from db import Task
 from models import Task, Category, User
 
 

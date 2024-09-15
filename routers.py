@@ -81,8 +81,7 @@ async def new_task(
 
 
 @api.get('/shop')
-async def shop(db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
-               ) -> list[schemas.User.money, schemas.User.freeze_count]:
+async def shop(db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]):
     return [current_user.money, current_user.freeze_count]
 
 
@@ -99,10 +98,9 @@ async def freeze(count: int, db: Annotated[Session, Depends(get_db)],
 @api.post('/shop/custom')
 async def freeze(db: Annotated[Session, Depends(get_db)],
                  current_user: Annotated[models.User, Depends(get_current_user)],
-                 accent: int = Query(default=0, gt=0, lt=3), background: str = "", ) \
-        -> [schemas.User.accent, schemas.User.background]:
-    if current_user.money < 6 * (max(0, accent - 1)) and (
-            background != "" or current_user.money - 6 * (max(0, accent - 1)) < 10):
+                 accent: int = Query(default=0, gt=0, lt=3), background: str = "", ):
+
+    if current_user.money < 6 * max(0, accent - 1) and (background != "" or current_user.money - 6 * max(0, accent - 1) < 10):
         return HTTPException(status_code=400, detail="Не хватает монет")
 
     update_user_preferences(db, current_user, accent, background)

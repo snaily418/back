@@ -18,7 +18,7 @@ def get_users(db: Session):
 
 
 
-def get_user_by_name(db: Session, user: U):
+def get_user_by_name(db: Session, user: User):
     return db.query(User).filter(User.username == user.username).first()
 
 
