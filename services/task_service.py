@@ -1,10 +1,7 @@
 from sqlalchemy.orm import Session
-import datetime
-
-from db import Task
-import models
 
 import schemas
+from db import Task
 from models import Task, Category, User
 
 
@@ -35,7 +32,6 @@ def get_task(db: Session, task_id: int):
 
 
 def update_task(db: Session, task: Task):
-
     db.query(Task).filter(Task.task_id == task.task_id).update({
         Task.title: task.title,
         Task.description: task.description,

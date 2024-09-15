@@ -89,7 +89,7 @@ async def shop(db: Annotated[Session, Depends(get_db)], current_user: Annotated[
 @api.post('/shop/freeze')
 async def freeze(count: int, db: Annotated[Session, Depends(get_db)],
                  current_user: Annotated[models.User, Depends(get_current_user)]) -> schemas.User.freeze_count:
-    if current_user.money < 15*count:
+    if current_user.money < 15 * count:
         return HTTPException(status_code=400, detail="Не хватает монет")
     freeze_count_update(db, current_user, count)
 
@@ -99,9 +99,10 @@ async def freeze(count: int, db: Annotated[Session, Depends(get_db)],
 @api.post('/shop/custom')
 async def freeze(db: Annotated[Session, Depends(get_db)],
                  current_user: Annotated[models.User, Depends(get_current_user)],
-                 accent: int = Query(default=0, gt=0,  lt=3), background: str = "",) \
+                 accent: int = Query(default=0, gt=0, lt=3), background: str = "", ) \
         -> [schemas.User.accent, schemas.User.background]:
-    if current_user.money < 6*(max(0, accent-1))and (background != "" or current_user.money -6*(max(0, accent-1)) < 10):
+    if current_user.money < 6 * (max(0, accent - 1)) and (
+            background != "" or current_user.money - 6 * (max(0, accent - 1)) < 10):
         return HTTPException(status_code=400, detail="Не хватает монет")
 
     update_user_preferences(db, current_user, accent, background)
