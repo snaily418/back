@@ -71,7 +71,7 @@ async def get_all_tasks(
 
 
 @api.post('/categories/{id}/tasks/{task_id}')
-async def new_task(
+async def check_task(
         id: int, task_id: int, task: schemas.TaskCreate,
         db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ) -> schemas.Task:
@@ -80,7 +80,7 @@ async def new_task(
 
 
 @api.get('/categories/{id}/tasks/finished')
-async def new_task(
+async def finished_tasks(
         id: int, task: schemas.TaskCreate,
         db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ) -> list[schemas.Task]:
@@ -90,8 +90,9 @@ async def new_task(
 
 @api.get('/shop')
 async def shop(db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
-               ) -> list[schemas.User.money, schemas.User.freeze_count]:
-    return [current_user.money, current_user.freeze_count]
+               ):
+    return {"money":current_user.money, "freeze_count:":current_user.freeze_count,
+            "accent":current_user.accent, "background":current_user.background}
 
 
 @api.post('/shop/freeze')
