@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from routers import api
 from auth import auth
-from db import Base, engine
+from models import Base, engine
 
 Base.metadata.create_all(bind=engine)
 

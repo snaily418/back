@@ -10,8 +10,8 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
-from db import get_db
-from models import Login, Token
+from models import get_db
+from schemas import Login, Token
 from services.user_service import get_user_by_name, get_user
 
 from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES

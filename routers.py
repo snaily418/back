@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from auth import get_current_user
-from db import User, get_db
+from models import User, get_db
 
-from models import Task, TaskExt, User as UserO, UserCreateOrUpdate
+from schemas import Task, TaskExt, User as UserO, UserCreateOrUpdate
 
 api = APIRouter()
 

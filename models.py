@@ -1,73 +1,60 @@
+from typing import List
 from datetime import datetime, timedelta
 
-from pydantic import BaseModel
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import mapped_column, relationship, Mapped
+from database import Base
 
 
-class Login(BaseModel):
-    username: str
-    password: str
+class User(Base):
+    __tablename__ = 'users'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str]
+    email: Mapped[str]
+    password: Mapped[str]
+    avatar: Mapped[str | None]
+
+    money: Mapped[int] = mapped_column(default=0)
+
+    hot_days: Mapped[int] = mapped_column(default=0)
+    first_hot_day: Mapped[datetime] = mapped_column(default=datetime.now)
+    freeze_count: Mapped[int] = mapped_column(default=0)
+
+    preference_accent: Mapped[int] = mapped_column(default=0)
+    preference_background: Mapped[str | None]
+
+    categories: Mapped[List["Category"]] = relationship(
+        back_populates="user", cascade="all"
+    )
 
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
+class Category:
+    __tablename__ = 'categories'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str]
+    permanent: bool = mapped_column(default=False)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped[User] = relationship(back_populates="categories")
+
+    tasks: Mapped[List["Task"]] = relationship()
 
 
-class Preferences(BaseModel):
-    accent: int | None
-    background: str | None
+class Task:
+    __tablename__ = 'tasks'
 
+    id: Mapped[int] = mapped_column(primary_key=True)
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
 
-class UserBase(BaseModel):
-    username: str
-    email: str
+    checked: Mapped[bool] = mapped_column(default=False)
+    title: Mapped[str]
+    description: Mapped[str | None]
+    markdown: Mapped[str | None]
+    priority: Mapped[bool] = mapped_column(default=False)
 
-
-class UserCreateOrUpdate(UserBase):
-    password: str
-
-
-class User(UserBase):
-    id: int
-
-    preferences: Preferences
-
-    class Config:
-        orm_mode = True
-
-
-class CategoryBase(BaseModel):
-    title: str
-
-
-class Category(CategoryBase):
-    id: int
-
-    class Config:
-        orm_mode = True
-
-
-class TaskBase(BaseModel):
-    title: str
-    description: str | None
-    priority: bool
-
-
-class Task(TaskBase):
-    id: int
-    checked: bool
-
-    tags: str | None
-    time: datetime | None
-    remind: timedelta | None
-
-    address: str | None
-    markdown: str | None
-
-    
-    class Config:
-        orm_mode = True
-
-
-# обратная совместимость, после мерджа исправлю
-TaskExt = Task
+    tags: Mapped[str | None]
+    time: Mapped[datetime | None]
+    address: Mapped[str | None]
+    remind: Mapped[timedelta | None]
