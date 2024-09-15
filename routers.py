@@ -81,7 +81,7 @@ async def checks_task(
 
 @api.get('/categories/{id}/tasks/finished')
 async def finished_tasks(
-        id: int, task: schemas.TaskCreate,
+        id: int,
         db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ) -> list[schemas.Task]:
     tasks = get_finish_tasks(db, current_user, id)

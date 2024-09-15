@@ -41,7 +41,7 @@ async def ping():
 @app.on_event("startup")
 def startup_event():
     db = session()
-    
+
     scheduler = BackgroundScheduler()
     trigger = CronTrigger(hour=1, minute=0)
     scheduler.add_job(every_day_check, trigger, args=(db,))
