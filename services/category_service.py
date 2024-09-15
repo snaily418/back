@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 
-from db import Category
+
+import schemas
+from models import User, Category
 
 
 def get_category(db: Session, id: int):
@@ -11,12 +13,12 @@ def get_categorys(db: Session, user_id: int):
     return db.query(Category).filter(Category.user_id == user_id).all()
 
 
-def create_category(db: Session, user_id: int, title: str):
-    new_Category = Category(user_id=user_id,
-                            title=title)
-    db.add(new_Category)
+def create_category(db: Session, user: User, title: str):
+    category = Category(title=title, user=user)
+    db.add(category)
     db.commit()
-    return new_Category
+    db.refresh(category)
+    return category
 
 
 def update_category(db: Session, id: int, title: str):

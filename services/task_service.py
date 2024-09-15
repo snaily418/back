@@ -18,7 +18,6 @@ def create_task(db: Session, category_id: int, data: schemas.TaskCreate, user: U
         title=data.title,
         description=data.description,
         priority=data.priority,
-
     )
 
     db.add(task)
@@ -27,8 +26,7 @@ def create_task(db: Session, category_id: int, data: schemas.TaskCreate, user: U
     return task
 
 
-
-def get_tasks(db: Session, user: int, category_id: int):
+def get_tasks(db: Session, user: User, category_id: int):
     category = db.query(Category).filter(Category.id == category_id, Category.user == user).first()
     tasks = db.query(Task).filter(Task.category == category).all()
     return tasks
