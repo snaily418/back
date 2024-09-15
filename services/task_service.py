@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
 
-import db as bd
-from models import Task
+from db import Task
+import models
 
 
-def create_task(db: Session, user_id: int, task: Task):
-    new_task = bd.Task(
+def create_task(db: Session, user_id: int, task: models.Task):
+    new_task = Task(
         category_id=task.category_id,
         user_id=user_id,
         title=task.title,
@@ -33,7 +33,7 @@ def get_task_ext(db: Session, task_id: int):
     return task
 
 
-def update_task(db: Session, task: Task):
+def update_task(db: Session, task: models.Task):
     db.query(Task).filter(Task.task_id == task.task_id).update({
         Task.title: task.title,
         Task.description: task.description,
