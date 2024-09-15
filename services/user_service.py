@@ -42,14 +42,12 @@ def update_user(db: Session, credentials: schemas.UserCreateOrUpdate):
     return True
 
 
-
 def update_user_password(db: Session, user: User, old_password: str, new_password: str):
     old_hash = db.query(User).filter(User.username == user.username).one_or_none()
     if verify_password(old_password, old_hash):
         db.query(User).filter(User.username == user.username).update({User.hash: get_password_hash(new_password)})
         return True
     return {"error": "old password is wrong"}
-
 
 
 def update_user_preferences(db: Session, user: User, accent: int | None, background: str):

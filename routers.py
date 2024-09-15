@@ -9,7 +9,7 @@ from auth import get_current_user
 from database import get_db
 from services.category_service import create_category
 from services.task_service import create_task, get_tasks, check_task, get_finish_tasks
-from services.user_service import freeze_count_update, update_user_preferences
+from services.user_service import create_user, update_user, freeze_count_update, update_user_preferences
 
 api = APIRouter()
 
@@ -22,11 +22,19 @@ async def me(
 
 
 @api.patch('/me')
-async def update_user(
+async def updates_user(
         data: schemas.UserCreateOrUpdate,
         db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
-):
-    pass
+) -> schemas.User:
+    update_user(db, data)
+    return current_user
+
+@api.post('/me')
+async def creates_user(
+        data: schemas.UserCreateOrUpdate,
+        db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
+) -> schemas.User:
+    return create_user(db, data)
 
 
 @api.get('/categories')
@@ -63,7 +71,7 @@ async def get_all_tasks(
 
 
 @api.post('/categories/{id}/tasks/{task_id}')
-async def check(
+async def checks_task(
         id: int, task_id: int, task: schemas.TaskCreate,
         db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ):
@@ -71,7 +79,7 @@ async def check(
 
 
 @api.get('/categories/{id}/tasks/finished')
-async def new_task(
+async def finished_tasks(
         id: int, task: schemas.TaskCreate,
         db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ) -> list[schemas.Task]:
@@ -80,24 +88,25 @@ async def new_task(
 
 
 @api.get('/shop')
-async def shop(db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]):
-    return [current_user.money, current_user.freeze_count]
+async def shop(db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
+               ):
+    return {"money":current_user.money, "freeze_count:":current_user.freeze_count,
+            "accent":current_user.accent, "background":current_user.background}
 
 
 @api.post('/shop/freeze')
-async def freeze(count: int, db: Annotated[Session, Depends(get_db)],
+async def freeze(db: Annotated[Session, Depends(get_db)],
                  current_user: Annotated[models.User, Depends(get_current_user)]):
-
-    if current_user.money < 15 * count:
+    if current_user.money < 15:
         return HTTPException(status_code=400, detail="Не хватает монет")
 
-    freeze_count_update(db, current_user, count)
+    freeze_count_update(db, current_user, 1)
 
     return current_user.freeze_count
 
 
 @api.post('/shop/custom')
-async def freeze(db: Annotated[Session, Depends(get_db)],
+async def custom(db: Annotated[Session, Depends(get_db)],
                  current_user: Annotated[models.User, Depends(get_current_user)],
                  accent: int = Query(default=0, gt=0, lt=3), background: str = "", ):
 
