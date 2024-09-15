@@ -10,3 +10,4 @@ def get_password_hash(password):
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password=pwd_bytes, salt=salt)
     return hashed_password
+
