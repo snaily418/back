@@ -8,7 +8,7 @@ import schemas
 from auth import get_current_user
 from database import get_db
 from services.category_service import create_category
-from services.task_service import create_task, get_tasks, get_task, check_task, get_finish_tasks
+from services.task_service import create_task, get_tasks, check_task, get_finish_tasks
 from services.user_service import freeze_count_update, update_user_preferences
 
 api = APIRouter()
@@ -68,7 +68,7 @@ async def check(
         db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ):
     check_task(db, task_id)
-    
+
 
 @api.get('/categories/{id}/tasks/finished')
 async def new_task(
@@ -86,9 +86,11 @@ async def shop(db: Annotated[Session, Depends(get_db)], current_user: Annotated[
 
 @api.post('/shop/freeze')
 async def freeze(count: int, db: Annotated[Session, Depends(get_db)],
-                 current_user: Annotated[models.User, Depends(get_current_user)]) -> schemas.User.freeze_count:
+                 current_user: Annotated[models.User, Depends(get_current_user)]):
+
     if current_user.money < 15 * count:
         return HTTPException(status_code=400, detail="Не хватает монет")
+
     freeze_count_update(db, current_user, count)
 
     return current_user.freeze_count

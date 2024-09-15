@@ -25,8 +25,10 @@ class UserCreateOrUpdate(UserBase):
 class User(UserBase):
     id: int
     categories: list["Category"] = []
+    
     money: int
     hot_days: int
+    freeze_count: int
 
     preference_accent: int | None
     preference_background: str | None
