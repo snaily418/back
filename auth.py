@@ -1,21 +1,18 @@
-from typing import Annotated
 from datetime import datetime, timedelta
+from typing import Annotated
 
 import jwt
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
-from utils import get_password_hash, verify_password
-
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 import schemas
+from config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from database import get_db
-from services.user_service import get_user_by_name, get_user, create_user
-
-from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-
+from services.user_service import create_user, get_user, get_user_by_name
+from utils import verify_password
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 

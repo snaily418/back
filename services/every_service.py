@@ -1,5 +1,5 @@
-from services.user_service import get_users, hot_days_update
 from services.task_service import get_tasks
+from services.user_service import get_users, hot_days_update
 
 
 def every_day_check(db):

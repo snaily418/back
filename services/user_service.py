@@ -8,7 +8,6 @@ from models import User, Category
 from utils import get_password_hash, verify_password
 
 
-
 def get_user(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).one_or_none()
 
@@ -17,10 +16,8 @@ def get_users(db: Session):
     return db.query(User).all()
 
 
-
 def get_user_by_name(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
-
 
 
 def create_user(db: Session, credentials: schemas.UserCreateOrUpdate):
@@ -83,8 +80,7 @@ def hot_days_update(db: Session, user: User, hot_days: bool):
 
 
 def freeze_count_update(db: Session, user: User, freeze_count: int):
-    db.query(User).filter(User.username == user.username).update({User.freeze_count: User.freeze_count + freeze_count, User.money: User.money - (15*freeze_count)})
+    db.query(User).filter(User.username == user.username).update(
+        {User.freeze_count: User.freeze_count + freeze_count, User.money: User.money - (15*freeze_count)})
     db.commit()
     return True
-
-

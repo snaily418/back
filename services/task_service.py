@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
 import schemas
-from models import Task, Category, User
 from exceptions import AccessDeniedException
+from models import Category, Task, User
 
 
 def create_task(db: Session, category_id: int, data: schemas.TaskCreate, user: User):
@@ -56,7 +56,7 @@ def check_task(db: Session, task_id: int, user: User):
     task = db.get(Task, task_id)
 
     # if not task.category.user != user:
-        # raise AccessDeniedException
+    # raise AccessDeniedException
 
     task.checked = True
     db.commit()

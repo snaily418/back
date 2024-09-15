@@ -1,8 +1,6 @@
 from sqlalchemy.orm import Session
 
-
-import schemas
-from models import User, Category
+from models import Category, User
 
 
 def get_category(db: Session, id: int):
