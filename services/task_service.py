@@ -1,11 +1,9 @@
 from sqlalchemy.orm import Session
-
-import db as bd
-from models import Task
+from schemas import Task
 
 
 def create_task(db: Session, user_id: int, task: Task):
-    new_task = bd.Task(
+    new_task = Task(
         category_id=task.category_id,
         user_id=user_id,
         title=task.title,
