@@ -35,12 +35,16 @@ class User(UserBase):
 
 class CategoryBase(BaseModel):
     title: str
-    permanent: bool
+
+
+class CategoryCreate(CategoryBase):
+    pass
 
 
 class Category(CategoryBase):
     id: int
     user_id: int
+    permanent: bool
 
     class Config:
         orm_mode = True

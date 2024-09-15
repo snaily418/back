@@ -94,7 +94,7 @@ async def login(credentials: Annotated[OAuth2PasswordRequestForm, Depends()], db
 
 @auth.post('/register')
 async def register(credentials: schemas.UserCreateOrUpdate, db: Annotated[Session, Depends(get_db)]) -> schemas.Token:
-    user = create_user(credentials)
+    user = create_user(db, credentials)
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(

@@ -14,7 +14,8 @@ def get_user_by_name(db: Session, username: str):
 
 
 def create_user(db: Session, credentials: schemas.UserCreateOrUpdate):
-    user = User(username=credentials.username, emil=credentials.email, password=get_password_hash(credentials.password))
+    user = User(username=credentials.username, email=credentials.email,
+                password=get_password_hash(credentials.password))
     db.add(user)
     db.add(Category(title="Работа", permanent=True, user=user))
     db.add(Category(title="Личное", permanent=True, user=user))
@@ -33,3 +34,11 @@ def update_user_password(db: Session, old_password: str, new_password: str):
 
 def update_user_preferences(db: Session, accent: int | None, background: str):
     pass
+
+
+def create_category(db: Session, user: User, title: str):
+    category = Category(title=title, user=user)
+    db.add(category)
+    db.commit()
+    db.refresh(category)
+    return category

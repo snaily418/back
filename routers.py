@@ -3,10 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from auth import get_current_user
-from database import get_db
 
 import schemas
 import models
+from database import get_db
+from services.user_service import create_category
 
 api = APIRouter()
 
@@ -30,14 +31,16 @@ async def update_user(
 async def get_categories(
     db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ):
-    return []
+    return current_user.categories
 
 
 @api.post('/categories')
-async def create_category(
+async def new_category(
+    category: schemas.CategoryCreate,
     db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ):
-    return []
+    category = create_category(db, current_user, category.title)
+    return category
 
 
 @api.get('/categories/{id}/tasks')
