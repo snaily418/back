@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+import datetime
 
 from db import Task
 import models
@@ -44,3 +45,31 @@ def update_task(db: Session, task: models.Task):
         Task.checked: task.checked
     })
     db.commit()
+    return 1
+
+def delete_task(db: Session, task_id: int):
+    db.query(Task).filter(Task.task_id == task_id).delete()
+    db.commit()
+    return 1
+
+
+def check_task(db: Session, task_id: int):
+    db.query(Task).filter(Task.task_id == task_id).update({
+        Task.checked: True
+    })
+    db.commit()
+    return 1
+
+
+def finish_tasks(db: Session, user_id: int, category_id: int):
+    return db.query(Task).filter(Task.user_id == user_id, Task.category_id == category_id, Task.checked == True).all()
+
+
+def get_filtered_tasks(session: Session, model, **kwargs):
+    filters = []
+
+    for key, value in kwargs.items():
+        if value is not None:
+            filters.append(getattr(model, key) == value)
+
+    return session.query(model).filter(*filters).all()
