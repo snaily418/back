@@ -53,10 +53,10 @@ def delete_task(db: Session, task_id: int):
 
 
 def check_task(db: Session, task_id: int, user: User):
-    task = db.query(Task).filter(Task.task_id == task_id).first()
+    task = db.get(Task, task_id)
 
-    if not task.category.user != user:
-        raise AccessDeniedException
+    # if not task.category.user != user:
+        # raise AccessDeniedException
 
     task.checked = True
     db.commit()

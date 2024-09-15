@@ -29,6 +29,7 @@ async def updates_user(
     update_user(db, data)
     return current_user
 
+
 @api.post('/me')
 async def creates_user(
         data: schemas.UserCreateOrUpdate,
@@ -72,10 +73,10 @@ async def get_all_tasks(
 
 @api.post('/categories/{id}/tasks/{task_id}')
 async def checks_task(
-        id: int, task_id: int, task: schemas.TaskCreate,
+        id: int, task_id: int,
         db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ):
-    check_task(db, task_id)
+    check_task(db, task_id, current_user)
 
 
 @api.get('/categories/{id}/tasks/finished')
@@ -90,8 +91,8 @@ async def finished_tasks(
 @api.get('/shop')
 async def shop(db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
                ):
-    return {"money":current_user.money, "freeze_count:":current_user.freeze_count,
-            "accent":current_user.accent, "background":current_user.background}
+    return {"money": current_user.money, "freeze_count:": current_user.freeze_count,
+            "accent": current_user.accent, "background": current_user.background}
 
 
 @api.post('/shop/freeze')
