@@ -31,4 +31,4 @@ app.add_middleware(
 
 @app.get('/')
 async def ping():
-    return 'pong'
+    return {"message": "Приложение работает!"}
