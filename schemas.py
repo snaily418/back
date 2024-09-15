@@ -58,6 +58,15 @@ class TaskBase(BaseModel):
     priority: bool
 
 
+class TaskUpdate(BaseModel):
+    tags: str | None
+    time: datetime | None
+    remind: timedelta | None
+
+    address: str | None
+    markdown: str | None
+
+
 class TaskCreate(TaskBase):
     pass
 

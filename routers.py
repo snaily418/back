@@ -63,13 +63,12 @@ async def get_all_tasks(
 
 
 @api.post('/categories/{id}/tasks/{task_id}')
-async def new_task(
+async def check(
         id: int, task_id: int, task: schemas.TaskCreate,
         db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
-) -> schemas.Task:
+):
     check_task(db, task_id)
-    return get_task(db, task_id)
-
+    
 
 @api.get('/categories/{id}/tasks/finished')
 async def new_task(

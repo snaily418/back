@@ -2,10 +2,15 @@ from sqlalchemy.orm import Session
 
 import schemas
 from models import Task, Category, User
+from exceptions import AccessDeniedException
 
 
 def create_task(db: Session, category_id: int, data: schemas.TaskCreate, user: User):
-    category = db.query(Category).filter(Category.id == category_id, Category.user == user).first()
+    category = db.get(Category, category_id)
+
+    if category.user != user:
+        raise AccessDeniedException
+
     task = Task(
         category=category,
         title=data.title,
@@ -20,42 +25,41 @@ def create_task(db: Session, category_id: int, data: schemas.TaskCreate, user: U
 
 
 def get_tasks(db: Session, user: User, category_id: int):
-    category = db.query(Category).filter(Category.id == category_id, Category.user == user).first()
-    tasks = db.query(Task).filter(Task.category == category).all()
-    return tasks
+    category = db.get(Category, category_id)
+
+    if category.user != user:
+        raise AccessDeniedException
+
+    return category.tasks
 
 
-def get_task(db: Session, task_id: int):
-    tasks = db.query(Task).filter(Task.task_id == task_id).one_or_none()
-    return tasks
+def update_task(db: Session, task_id: int, data: schemas.TaskUpdate):
+    task = db.get(Task, task_id)
 
+    task.title = data.title or task.title
+    task.description = data.description or task.description
+    task.priority = data.priority or task.priority
+    task.tags = data.tags or task.tags
+    task.time = data.time or task.time
+    task.remind = data.remind or task.remind
+    task.checked = data.checked or task.checked
 
-def update_task(db: Session, task: Task):
-    db.query(Task).filter(Task.task_id == task.task_id).update({
-        Task.title: task.title,
-        Task.description: task.description,
-        Task.priority: task.priority,
-        Task.tags: task.tags,
-        Task.time: task.time,
-        Task.remind: task.remind,
-        Task.checked: task.checked
-    })
     db.commit()
-    return 1
 
 
 def delete_task(db: Session, task_id: int):
-    db.query(Task).filter(Task.task_id == task_id).delete()
+    db.delete(db.get(Task, task_id))
     db.commit()
-    return 1
 
 
-def check_task(db: Session, task_id: int):
-    db.query(Task).filter(Task.task_id == task_id).update({
-        Task.checked: True
-    })
+def check_task(db: Session, task_id: int, user: User):
+    task = db.query(Task).filter(Task.task_id == task_id).first()
+
+    if not task.category.user != user:
+        raise AccessDeniedException
+
+    task.checked = True
     db.commit()
-    return 1
 
 
 def get_finish_tasks(db: Session, user: User, category_id: int):
