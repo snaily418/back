@@ -10,8 +10,8 @@ class User(Base):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    username: Mapped[str]
-    email: Mapped[str]
+    username: Mapped[str] = mapped_column(unique=True)
+    email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
     avatar: Mapped[str | None]
 
@@ -25,24 +25,24 @@ class User(Base):
     preference_background: Mapped[str | None]
 
     categories: Mapped[List["Category"]] = relationship(
-        back_populates="user", cascade="all"
+        back_populates="user"
     )
 
 
-class Category:
+class Category(Base):
     __tablename__ = 'categories'
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str]
-    permanent: bool = mapped_column(default=False)
+    permanent: Mapped[bool] = mapped_column(default=False)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped[User] = relationship(back_populates="categories")
+    user: Mapped["User"] = relationship(back_populates="categories")
 
     tasks: Mapped[List["Task"]] = relationship()
 
 
-class Task:
+class Task(Base):
     __tablename__ = 'tasks'
 
     id: Mapped[int] = mapped_column(primary_key=True)

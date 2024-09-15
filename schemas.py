@@ -13,11 +13,6 @@ class Token(BaseModel):
     token_type: str
 
 
-class Preferences(BaseModel):
-    accent: int | None
-    background: str | None
-
-
 class UserBase(BaseModel):
     username: str
     email: str
@@ -29,8 +24,10 @@ class UserCreateOrUpdate(UserBase):
 
 class User(UserBase):
     id: int
+    categories: list["Category"] = []
 
-    preferences: Preferences
+    preference_accent: int | None
+    preference_background: str | None
 
     class Config:
         orm_mode = True
@@ -38,10 +35,12 @@ class User(UserBase):
 
 class CategoryBase(BaseModel):
     title: str
+    permanent: bool
 
 
 class Category(CategoryBase):
     id: int
+    user_id: int
 
     class Config:
         orm_mode = True
@@ -64,10 +63,9 @@ class Task(TaskBase):
     address: str | None
     markdown: str | None
 
-    
     class Config:
         orm_mode = True
 
 
-# обратная совместимость, после мерджа исправлю
+# обратная совместимость, после исправлю
 TaskExt = Task
