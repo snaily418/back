@@ -9,7 +9,7 @@ from auth import get_current_user
 from database import get_db
 from services.category_service import create_category
 from services.task_service import create_task, get_tasks, get_task, check_task, get_finish_tasks
-from services.user_service import freeze_count_update, update_user_preferences
+from services.user_service import create_user, update_user, freeze_count_update, update_user_preferences
 
 api = APIRouter()
 
@@ -22,11 +22,19 @@ async def me(
 
 
 @api.patch('/me')
-async def update_user(
+async def updates_user(
         data: schemas.UserCreateOrUpdate,
         db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
-):
-    pass
+) -> schemas.User:
+    update_user(db, data)
+    return current_user
+
+@api.post('/me')
+async def creates_user(
+        data: schemas.UserCreateOrUpdate,
+        db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
+) -> schemas.User:
+    return create_user(db, data)
 
 
 @api.get('/categories')
@@ -97,7 +105,7 @@ async def freeze(count: int, db: Annotated[Session, Depends(get_db)],
 
 
 @api.post('/shop/custom')
-async def freeze(db: Annotated[Session, Depends(get_db)],
+async def custom(db: Annotated[Session, Depends(get_db)],
                  current_user: Annotated[models.User, Depends(get_current_user)],
                  accent: int = Query(default=0, gt=0, lt=3), background: str = "", ) \
         -> [schemas.User.accent, schemas.User.background]:
