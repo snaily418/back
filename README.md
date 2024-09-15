@@ -9,21 +9,21 @@
 1. Клонируйте репозиторий:
 
 ```sh
-    git clone https://github.com/snaily418/back/
-    cd back
+git clone https://github.com/snaily418/back/
+cd back
 ```
 
 2. Создайте и активируйте виртуальное окружение:
 
 ```sh
-   python -m venv venv
-   venv/Scripts/activate
+python -m venv venv
+venv/Scripts/activate
 ```
 
 3. Установите все зависимости:
 
 ```sh
-   pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Используемые библиотеки
