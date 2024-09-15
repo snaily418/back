@@ -39,7 +39,7 @@ class Category(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="categories")
 
-    tasks: Mapped[List["Task"]] = relationship()
+    tasks: Mapped[List["Task"]] = relationship(back_populates="category")
 
 
 class Task(Base):
@@ -47,6 +47,7 @@ class Task(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
+    category: Mapped["Category"] = relationship(back_populates="tasks")
 
     checked: Mapped[bool] = mapped_column(default=False)
     title: Mapped[str]

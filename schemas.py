@@ -56,6 +56,10 @@ class TaskBase(BaseModel):
     priority: bool
 
 
+class TaskCreate(TaskBase):
+    pass
+
+
 class Task(TaskBase):
     id: int
     checked: bool

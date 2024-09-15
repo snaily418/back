@@ -8,6 +8,7 @@ import schemas
 import models
 from database import get_db
 from services.user_service import create_category
+from services.task_service import create_task, get_tasks
 
 api = APIRouter()
 
@@ -28,7 +29,7 @@ async def update_user(
 
 
 @api.get('/categories')
-async def get_categories(
+async def get_all_categories(
     db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ):
     return current_user.categories
@@ -43,18 +44,18 @@ async def new_category(
     return category
 
 
+@api.post('/categories/{id}/tasks')
+async def new_task(
+    id: int, task: schemas.TaskCreate,
+    db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
+) -> schemas.Task:
+    task = create_task(db, id, task, current_user)
+    return task
+
+
 @api.get('/categories/{id}/tasks')
-async def get_tasks(
+async def get_all_tasks(
+    id: int,
     db: Annotated[Session, Depends(get_db)], current_user: Annotated[models.User, Depends(get_current_user)]
 ) -> list[schemas.Task]:
-
-    return []
-
-
-@api.get('/task/{task_id}')
-async def get_task(
-    task_id: int,
-    db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user),
-) -> schemas.TaskExt:
-
-    return
+    return get_tasks(db, current_user, id)
