@@ -3,16 +3,16 @@ from datetime import datetime, timedelta
 
 import jwt
 from jwt.exceptions import InvalidTokenError
-import bcrypt
+from utils import get_password_hash, verify_password
 
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
+import schemas
 from database import get_db
-from schemas import Login, Token
-from services.user_service import get_user_by_name, get_user
+from services.user_service import get_user_by_name, get_user, create_user
 
 from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
@@ -24,18 +24,6 @@ auth = APIRouter()
 
 class TokenData(BaseModel):
     user_id: int
-
-
-def verify_password(plain, hashed):
-    password_byte_enc = plain.encode('utf-8')
-    return bcrypt.checkpw(password=password_byte_enc, hashed_password=hashed)
-
-
-def get_password_hash(password):
-    pwd_bytes = password.encode('utf-8')
-    salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(password=pwd_bytes, salt=salt)
-    return hashed_password
 
 
 def authenticate_user(db: Session, username: str, password: str):
@@ -86,7 +74,7 @@ async def get_current_user(db: Annotated[Session, Depends(get_db)],
 
 
 @auth.post('/token')
-async def login(credentials: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(get_db)]) -> Token:
+async def login(credentials: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(get_db)]) -> schemas.Token:
     user = authenticate_user(db, credentials.username, credentials.password)
 
     if not user:
@@ -101,4 +89,16 @@ async def login(credentials: Annotated[OAuth2PasswordRequestForm, Depends()], db
         data={"id": user.id}, expires_delta=access_token_expires
     )
 
-    return Token(access_token=access_token, token_type="bearer")
+    return schemas.Token(access_token=access_token, token_type="bearer")
+
+
+@auth.post('/register')
+async def register(credentials: schemas.UserCreateOrUpdate, db: Annotated[Session, Depends(get_db)]) -> schemas.Token:
+    user = create_user(credentials)
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"id": user.id}, expires_delta=access_token_expires
+    )
+
+    return schemas.Token(access_token=access_token, token_type="bearer")

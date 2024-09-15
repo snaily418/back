@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 
-from models import User
+import schemas
+from models import User, Category
+from utils import get_password_hash
 
 
 def get_user(db: Session, user_id: int):
@@ -11,11 +13,17 @@ def get_user_by_name(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
 
 
-def create_user(db: Session, username: str, email: str, password: str):
-    pass
+def create_user(db: Session, credentials: schemas.UserCreateOrUpdate):
+    user = User(username=credentials.username, emil=credentials.email, password=get_password_hash(credentials.password))
+    db.add(user)
+    db.add(Category(title="Работа", permanent=True, user=user))
+    db.add(Category(title="Личное", permanent=True, user=user))
+    db.commit()
+    db.refresh(user)
+    return user
 
 
-def update_user(db: Session, username: str | None = None):
+def update_user(db: Session, credentials: schemas.UserCreateOrUpdate):
     pass
 
 
