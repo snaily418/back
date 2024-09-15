@@ -74,7 +74,7 @@ async def get_current_user(db: Annotated[Session, Depends(get_db)],
 
 
 @auth.post('/token')
-async def login(credentials: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(get_db)]) -> schemas.Token:
+async def login(credentials: schemas.Login, db: Annotated[Session, Depends(get_db)]) -> schemas.Token:
     user = authenticate_user(db, credentials.username, credentials.password)
 
     if not user:
