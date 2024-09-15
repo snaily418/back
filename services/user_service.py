@@ -1,9 +1,9 @@
 import datetime
-from hashlib import sha256
 
 from sqlalchemy.orm import Session
 
 from db import User
+from utils import verify_password, get_password_hash
 
 
 def get_user(db: Session, user_id: int):
@@ -17,7 +17,7 @@ def get_users(db: Session, user_id: int):
 def create_user(db: Session, username: str, email: str, password: str):
     new_user = User(username=username,
                     email=email,
-                    hash=sha256(password.encode()),
+                    hash=get_password_hash(password),
                     avatar="",
                     money=0,
                     hot_days=0,
@@ -42,8 +42,8 @@ def update_user(db: Session, username: str, email: str, hash: str, avatar: str, 
 
 def update_user_password(db: Session, username: str, old_password: str, new_password: str):
     old_hash = db.query(User).filter(User.username == username).one_or_none()
-    if old_hash == sha256(old_password.encode()):
-        db.query(User).filter(User.username == username).update({User.hash: sha256(new_password.encode())})
+    if verify_password(old_password, old_hash):
+        db.query(User).filter(User.username == username).update({User.hash: get_password_hash(new_password)})
         return True
     return {"error": "old password is wrong"}
 
